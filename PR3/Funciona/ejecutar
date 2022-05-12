@@ -1,0 +1,34 @@
+./simulador ejemplosRAM/test1.ram ejemplosRAM/input_tape1.in ejemplosRAM/output_tape1.out
+
+Lee y carga
+Si es > 0, salta a if
+si no, salta a else
+if:
+  carga en r0 un 1.
+	se guarda en la posicion de memoria 2 el valor de r0
+  se carga el valor y se guarda en la posicion de memoria 3
+  se carga el valor y se guarda en la posicion de memoria 4
+while:
+  se carga el valor guardado en la posicion 4
+  si es > 0, salta a cont
+  si no,     salta a enwhile
+cont:
+  carga el valor de la posición de memoria 2 en r0
+  multiplica la posición 3 con r0 y guardo el valor en la posición 2
+  cargo el valor de la posición de memoria 4 en r0 y le resto 1
+  lo regreso a la posición de memoria 4
+  salta a while
+endwhile:
+  escribo en la cinta de salida la posición de memoria 2
+  salta a final
+else:
+  escribo 0 en la cinta de salida.
+final:
+  sale
+
+Compruebo que el valor sea mayor que 0, si lo es 
+cargo el valor en la posición 2, 3, 4.
+Si la copia en 4 es mayor que 0 salta a cont
+donde multiplica 2 y 3 guardandolo en 2, le resto 1 a la posicion 4
+Cuando 4 llege a 0 escribo en la cinta de salida lo guardado en 2.
+
