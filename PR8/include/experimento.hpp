@@ -17,7 +17,11 @@ class Experimento {
     string getTipoAlgoritmo() const;
     Problema getProblema() const;
 
-    void voraz(int sizeSolucion);
+    void voraz(int size_solucion);
+    void grasp(int size_solucion, AlgoritmoVecinos* algoritmo_vecinos,
+              int size_rcl = 3, int max_iteraciones = 100);
+    void ramaypoda(int size_solucion, Solucion solucion,
+                      int estrategia_expansion = 0);
 
     ostream& mostrarTabla(ostream& os);
     void algoritmoExtraInfo(ostream& os) const;

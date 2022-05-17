@@ -14,7 +14,7 @@ F7 = src/experimento.cpp
 F8  = src/voraz.cpp
 F9 = src/busquedalocal.cpp
 F10 = src/grasp.cpp
-F11 = src/branchbound.cpp
+F11 = src/ramaypoda.cpp
 
 PROGRAM = ryp
 

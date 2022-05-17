@@ -1,5 +1,7 @@
 #include "../include/experimento.hpp"
 #include "../include/algoritmos/voraz.hpp"
+#include "../include/algoritmos/grasp.hpp"
+#include "../include/algoritmos/ramaypoda.hpp"
 #include "../include/estrategia.hpp"
 //#include "timer.cpp"
 
@@ -37,12 +39,41 @@ Problema Experimento::getProblema() const {
   return problema_;
 }
 
-void Experimento::voraz(int sizeSolucion) {
+void Experimento::voraz(int size_solucion) {
   clock_t start = clock();
 
   tipo_algoritmo_ = "voraz";
+  size_soluciones_ = size_solucion;
+  Estrategia estrategia(new Voraz(size_solucion));
+  solucion_ = estrategia.run(problema_);
+
+  cpu_time_ = (clock() - start) / (double)CLOCKS_PER_SEC;
+}
+
+void Experimento::grasp(int sizeSolucion,
+                       AlgoritmoVecinos* algoritmo_vecinos, int size_rcl,
+                       int max_iteraciones) {
+  clock_t start = clock();
+
+  tipo_algoritmo_ = "grasp";
   size_soluciones_ = sizeSolucion;
-  Estrategia estrategia(new Voraz(sizeSolucion));
+  max_iteraciones_ = max_iteraciones;
+  rcl_size_ = size_rcl;
+  Estrategia estrategia(new GRASP(sizeSolucion, algoritmo_vecinos, size_rcl, max_iteraciones));
+  solucion_ = estrategia.run(problema_);
+
+  cpu_time_ = (clock() - start) / (double)CLOCKS_PER_SEC;
+}
+
+void Experimento::ramaypoda(int size_solucion, Solucion solucion,
+                              int expansion_estrategia) {
+  clock_t start = clock();
+
+  tipo_algoritmo_ = "branch_bound";
+  size_soluciones_ = size_solucion;
+  estrategia_expansion_ = expansion_estrategia;
+
+  Estrategia estrategia( new Ramaypoda(size_solucion, solucion, expansion_estrategia));
   solucion_ = estrategia.run(problema_);
 
   cpu_time_ = (clock() - start) / (double)CLOCKS_PER_SEC;
@@ -56,12 +87,16 @@ ostream& Experimento::mostrarTabla(ostream& os) {
      << " | " << getProblema().getDimensionSize() << " | "
      << setw(3) << getSizeSoluciones() << " |";
   
-  
+    if (tipo_algoritmo_ == "grasp") {
+    os << ' ' << setw(4) << max_iteraciones_ << " |   " << rcl_size_ << " |";
+    }
+    if (tipo_algoritmo_ == "branch_bound") {
+      string nombre = estrategia_expansion_ == 0 ? "Nivel mínimo" : "Profunda";
+      os << setw(14) << nombre << " |";
+    }
 
   os << setw(10) << getSolucion().calcularObjetivoFunction();
 
-
-  //recorro el bucle y guardo en una cadena los punto.getID
   string puntos_id = "[";
   for (auto&& point : getSolucion().getListaPuntos()) {
     puntos_id += to_string(point.getId()) + " ";
@@ -78,18 +113,31 @@ ostream& Experimento::mostrarTabla(ostream& os) {
 ostream& operator<<(ostream& os, const Experimento& experimento) {
   os << experimento.getTipoAlgoritmo() << "\n";
   os << "| Problema"
-     << "                    ";
-  os << "| n"
-     << "  ";
-  os << "| K"
-     << " ";
-  os << "| m"
-     << "   ";
+     << "                    "
+     << "| n  "
+     << "| K " 
+     << "|  m  ";
+  
+  if (experimento.getTipoAlgoritmo()  == "grasp") {
+    os << "| Iter | LRC ";
+  }
+  if (experimento.getTipoAlgoritmo()  == "branch_bound") {
+    os << "|   Estrategia  ";
+  }
+
   os << "| z"
      << "         ";
   os << "| S"
      << "                    ";
   os << "|      CPU      |\n";
-  os << "|-----------------------------|----|---|-----|-----------|----------------------|---------------|";
+  if (experimento.getTipoAlgoritmo()  == "voraz") {
+    os << "|-----------------------------|----|---|-----|-----------|----------------------|---------------|";
+  }
+  if (experimento.getTipoAlgoritmo()  == "grasp") {
+    os << "|-----------------------------|----|---|-----|------|-----|-----------|----------------------|---------------|";
+  }
+  if (experimento.getTipoAlgoritmo()  == "branch_bound") {
+    os << "|-----------------------------|----|---|-----|---------------|-----------|----------------------|---------------|";
+  }
   return os;
 }

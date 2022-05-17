@@ -7,5 +7,5 @@ using namespace std;
 
 class AlgoritmoVecinos {
  public:
-  virtual std::vector<Solucion> generarVecino(Solucion& solucion) = 0;
+  virtual std::vector<Solucion> generarVecino(Solucion& solucion, Problema &problema) = 0;
 };
